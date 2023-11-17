@@ -68,7 +68,7 @@ export default function App() {
     // Don't forget to turn off the spinner!
     setMessage('');
     setSpinnerOn(true)
-       axiosWithAuth().get(articlesUrl)
+    axiosWithAuth().get(articlesUrl)
        .then(res=> {
         setArticles(res.data.articles);
         setMessage(res.data.message)
@@ -87,6 +87,20 @@ export default function App() {
     // The flow is very similar to the `getArticles` function.
     // You'll know what to do! Use log statements or breakpoints
     // to inspect the response from the server.
+    setMessage('');
+    setSpinnerOn(true)
+    axiosWithAuth().post(articlesUrl, article)
+       .then(res=> {
+        console.log(res)
+        setMessage(res.data.message)
+        setSpinnerOn(false)
+        redirectToArticles()
+       }) 
+       .catch(err=> {
+        console.log(err)
+        redirectToLogin();
+        setSpinnerOn(false);
+       })
   }
 
   const updateArticle = ({ article_id, article }) => {
@@ -96,6 +110,11 @@ export default function App() {
 
   const deleteArticle = article_id => {
     // ✨ implement
+    console.log(article_id)
+    axiosWithAuth().delete(`${articlesUrl}/${Number(article_id)}`)
+    .then(res => {
+      setArticles(articles.filter(item=>(item.article_id !== Number(article_id))))
+    })
   }
 
   return (
@@ -114,8 +133,8 @@ export default function App() {
           <Route path="/" element={<LoginForm login={login}/>} />
           <Route path="articles" element={
             <>
-              <ArticleForm />
-              <Articles getArticles={getArticles} articles={articles}/>
+              <ArticleForm postArticle={postArticle} updateArticle={updateArticle} setCurrentArticleId={setCurrentArticleId}/>
+              <Articles getArticles={getArticles} articles={articles} deleteArticle={deleteArticle} setCurrentArticleId={setCurrentArticleId}/>
             </>
           } />
         </Routes>

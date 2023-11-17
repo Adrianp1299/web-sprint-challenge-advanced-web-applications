@@ -4,21 +4,23 @@ import PT from 'prop-types'
 
 export default function Articles(props) {
   // ✨ where are my props? Destructure them here
-  const { getArticles, articles } = props
+  const { getArticles, articles, deleteArticle, setCurrentArticleId } = props
 
   // ✨ implement conditional logic: if no token exists
   // we should render a Navigate to login screen (React Router v.6)
+  
 
   useEffect(() => {
     // ✨ grab the articles here, on first render only
     getArticles()
-    console.log(articles)
   }, [])
 
   return (
     // ✨ fix the JSX: replace `Function.prototype` with actual functions
     // and use the articles prop to generate articles
+    
     <div className="articles">
+       { !localStorage.getItem('token') && <Navigate to="/"/> }
       <h2>Articles</h2>
       {
         !articles.length === 0
@@ -32,13 +34,14 @@ export default function Articles(props) {
                   <p>Topic: {art.topic}</p>
                 </div>
                 <div>
-                  <button disabled={true} onClick={Function.prototype}>Edit</button>
-                  <button disabled={true} onClick={Function.prototype}>Delete</button>
+                  <button disabled={false} onClick={evt => setCurrentArticleId(art.article_id)}>Edit</button>
+                  <button disabled={false} onClick={evt => deleteArticle(art.article_id)}>Delete</button>
                 </div>
               </div>
             )
           })
       }
+    
     </div>
   )
 }
