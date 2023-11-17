@@ -17,6 +17,7 @@ export default function App() {
   const [articles, setArticles] = useState([])
   const [currentArticleId, setCurrentArticleId] = useState()
   const [spinnerOn, setSpinnerOn] = useState(false)
+  const [currentArticle, setCurrentArticle] = useState()
 
   // ✨ Research `useNavigate` in React Router v.6
   const navigate = useNavigate()
@@ -91,10 +92,10 @@ export default function App() {
     setSpinnerOn(true)
     axiosWithAuth().post(articlesUrl, article)
        .then(res=> {
-        console.log(res)
         setMessage(res.data.message)
+        setArticles([ ...articles, res.data.article])
         setSpinnerOn(false)
-        redirectToArticles()
+        console.log(res.data.article)
        }) 
        .catch(err=> {
         console.log(err)
@@ -103,17 +104,28 @@ export default function App() {
        })
   }
 
-  const updateArticle = ({ article_id, article }) => {
+  const updateArticle = (article_id, article) => {
     // ✨ implement
     // You got this!
+    axiosWithAuth().put(`${articlesUrl}/${Number(article_id)}`, article)
+    .then(res=> {
+      setArticles([...articles, res.data.article]);
+      setMessage(res.data.message)
+    })
+    .catch(err=> {
+      console.log(err.response)
+    })
   }
 
   const deleteArticle = article_id => {
     // ✨ implement
-    console.log(article_id)
     axiosWithAuth().delete(`${articlesUrl}/${Number(article_id)}`)
     .then(res => {
       setArticles(articles.filter(item=>(item.article_id !== Number(article_id))))
+      setMessage(res.data.message)
+    })
+    .catch(err=> {
+      console.log(err)
     })
   }
 
@@ -133,8 +145,8 @@ export default function App() {
           <Route path="/" element={<LoginForm login={login}/>} />
           <Route path="articles" element={
             <>
-              <ArticleForm postArticle={postArticle} updateArticle={updateArticle} setCurrentArticleId={setCurrentArticleId}/>
-              <Articles getArticles={getArticles} articles={articles} deleteArticle={deleteArticle} setCurrentArticleId={setCurrentArticleId}/>
+              <ArticleForm currentArticle={currentArticle} setCurrentArticle={setCurrentArticle} postArticle={postArticle} updateArticle={updateArticle} currentArticleId={currentArticleId} setCurrentArticleId={setCurrentArticleId}/>
+              <Articles setCurrentArticle={setCurrentArticle} getArticles={getArticles} articles={articles} deleteArticle={deleteArticle} currentArticleId={currentArticleId} setCurrentArticleId={setCurrentArticleId}/>
             </>
           } />
         </Routes>
